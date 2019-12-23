@@ -1,4 +1,5 @@
-cube = list()
+PHASE = 6
+cube = []
 
 
 def goal_test(node):
@@ -40,7 +41,13 @@ def depth_limited_search(node, limit):
 
 
 def main():
-    pass
+    print("Enter your cube:")
+    for i in range(PHASE):
+        cube.append([])
+        tmp = input(f"[{i+1}]:").split(',')
+        for j in tmp:
+            cube[i].append(j)
 
-if name == "__name__":
-    pass
+
+if __name__ == "__main__":
+    main()
