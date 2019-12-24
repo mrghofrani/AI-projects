@@ -122,7 +122,7 @@ def depth_limited_search_decorator(cube, solution):
         if result: 
             break
         limit += 1
-    return result, solution
+    return result, solution[::-1]
 
 def main():
     print("Enter your cube:")
