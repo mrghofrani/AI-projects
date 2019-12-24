@@ -20,15 +20,20 @@ cube = []
 #                | 22 23 |
 #                +-------+
 
-def goal_test(node):
-    if cube[0] == [1,1,1,1] and \
-        cube[1] == [2,2,2,2] and \
-        cube[2] == [3,3,3,3] and \
-        cube[3] == [4,4,4,4] and \
-        cube[4] == [5,5,5,5] and \
-        cube[5] == [6,6,6,6]:
-        return True
-    return False
+def goal_test(cube):
+    sorted = [False, False, False, False, False]
+    for i in range(PHASE):
+        side_is_sorted = True
+        for j in range(i*PHASE, i*PHASE+PHASE_SIZE):
+            if cube[j] != (i+1):
+                side_is_sorted = False
+                break
+        sorted[i] = side_is_sorted
+    
+    for item in sorted:
+        if not item:
+            return False
+    return True
 
 
 def depth_limited_search_decorator(initial_node):
