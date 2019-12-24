@@ -40,8 +40,9 @@ def goal_test(cube):
     sorted = [False, False, False, False, False, False]
     for i in range(PHASE):
         side_is_sorted = True
+        norm = cube[i * PHASE]
         for j in range(i * PHASE_SIZE, (i + 1) * PHASE_SIZE):
-            if int(cube[j]) != (i+1):
+            if int(cube[j]) != norm:
                 side_is_sorted = False
                 break
         sorted[i] = side_is_sorted
