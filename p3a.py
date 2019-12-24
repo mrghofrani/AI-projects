@@ -9,24 +9,39 @@ solution = []
 # My rubik's cube internal indexing is
 #                +-------+
 #                | 0   1 |
-#                | 2   3 |
+#                | 3   2 |
 #         +------+-------+-------+
 #         | 4  5 | 8   9 | 12 13 |
-#         | 6  7 | 10 11 | 14 15 | 
+#         | 7  6 | 11 10 | 15 14 | 
 #         +------+-------+-------+
 #                | 16 17 |
-#                | 18 19 |
+#                | 19 18 |
 #                +-------+
 #                | 20 21 |
-#                | 22 23 |
+#                | 23 22 |
 #                +-------+
 
+def print_cube(cube):
+    print("       +------+")
+    print(f"       | {cube[0]}  {cube[1]} |")
+    print(f"       | {cube[3]}  {cube[2]} |")
+    print("+------+------+------+")
+    print(f"| {cube[4]}  {cube[5]} | {cube[8]}  {cube[9]} | {cube[12]}  {cube[13]} |")
+    print(f"| {cube[7]}  {cube[6]} | {cube[11]}  {cube[10]} | {cube[15]}  {cube[14]} |")
+    print("+------+------+------+")
+    print(f"       | {cube[16]}  {cube[17]} |")
+    print(f"       | {cube[19]}  {cube[18]} |")
+    print("       +------+")
+    print(f"       | {cube[20]}  {cube[21]} |")
+    print(f"       | {cube[23]}  {cube[22]} |")
+    print("       +------+")
+
 def goal_test(cube):
-    sorted = [False, False, False, False, False]
+    sorted = [False, False, False, False, False, False]
     for i in range(PHASE):
         side_is_sorted = True
-        for j in range(i*PHASE, i*PHASE+PHASE_SIZE):
-            if cube[j] != (i+1):
+        for j in range(i * PHASE_SIZE, (i + 1) * PHASE_SIZE):
+            if int(cube[j]) != (i+1):
                 side_is_sorted = False
                 break
         sorted[i] = side_is_sorted
@@ -54,8 +69,8 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
 def rotate(cube, phase, direction):
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
-        tmp_cube = swap(tmp_cube, 4, 8,12, 20, direction)
-        tmp_cube = swap(tmp_cube, 5, 9, 13, 21, direction)
+        tmp_cube = swap(tmp_cube, 4, 8,12, 22, direction)
+        tmp_cube = swap(tmp_cube, 5, 9, 13, 23, direction)
     elif phase == 1:
         tmp_cube = swap(cube, 4, 5, 6, 7, direction)
         tmp_cube = swap(tmp_cube, 0, 8, 16, 20, direction)
@@ -78,42 +93,47 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 18, 13, 0, 4, direction)
     return tmp_cube
 
-def depth_limited_search(cube, limit, phase, direction):
+def depth_limited_search(cube, limit, solution, phase, direction):
     if goal_test(cube):
-        solution.append((cube, phase, direction))
-        return True
+        solution.append((phase+1, direction))
+        return True, solution
     elif limit == 0:
-        return False 
+        return False, []
     else:
         cutoff = False
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
+                print_cube(cube)
                 child = rotate(cube, phase, direction) 
-                result = depth_limited_search(child, limit-1, phase, direction)
+                print_cube(child)
+                result = depth_limited_search(child, limit-1, solution, phase, direction)
                 if result:
-                    cutoff = True
-                elif result:
-                    solution.append((cube, phase, direction))
-                    return True
+                    solution.append((phase+1, direction))
+                    return True, solution
+                else:
+                    cutoff = False
         if cutoff:
-            return False
+            return False, []
 
-def depth_limited_search_decorator(cube):
+def depth_limited_search_decorator(cube, solution):
     limit = 0
     while True:
-        result = depth_limited_search(cube, limit, None, None)
-        if result == "success": 
+        (result, solution) = depth_limited_search(cube, limit, solution, None, None)
+        if result: 
             break
         limit += 1
-    return result
+    return result, solution
 
 def main():
     print("Enter your cube:")
     for i in range(PHASE):
         tmp = input(f"[{i+1}]:").split(',')
         for j,k in zip(tmp, range(PHASE_SIZE)):
-            cube.insert(i * PHASE + k, j)
-    print(cube)
+            cube.insert(i * PHASE_SIZE + k, j)
+    
+    solution = []
+    (_, solution) = depth_limited_search_decorator(cube, solution)
+    print(solution)
 
 if __name__ == "__main__":
     main()
