@@ -40,9 +40,9 @@ def goal_test(cube):
     sorted = [False, False, False, False, False, False]
     for i in range(PHASE):
         side_is_sorted = True
-        norm = cube[i * PHASE]
+        norm = cube[i * PHASE_SIZE]
         for j in range(i * PHASE_SIZE, (i + 1) * PHASE_SIZE):
-            if int(cube[j]) != norm:
+            if cube[j] != norm:
                 side_is_sorted = False
                 break
         sorted[i] = side_is_sorted
@@ -94,11 +94,11 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
     return tmp_cube
 
-def depth_limited_search(cube, limit, solution, phase, direction):
+def depth_limited_search(cube, limit, solution):
     if goal_test(cube):
-        solution.append((phase+1, direction))
         return True, solution
     elif limit == 0:
+        print("limit Reached")
         return False, []
     else:
         cutoff = False
@@ -107,7 +107,7 @@ def depth_limited_search(cube, limit, solution, phase, direction):
                 print_cube(cube)
                 child = rotate(cube, phase, direction) 
                 print_cube(child)
-                result = depth_limited_search(child, limit-1, solution, phase, direction)
+                result, solution = depth_limited_search(child, limit-1, solution)
                 if result:
                     solution.append((phase+1, direction))
                     return True, solution
@@ -119,7 +119,7 @@ def depth_limited_search(cube, limit, solution, phase, direction):
 def depth_limited_search_decorator(cube, solution):
     limit = 0
     while True:
-        (result, solution) = depth_limited_search(cube, limit, solution, None, None)
+        (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
         limit += 1
