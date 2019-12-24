@@ -4,6 +4,7 @@ PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
 cube = [] 
+solution = []
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -86,24 +87,25 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 18, 13, 0, 4, direction)
     return tmp_cube
 
-def depth_limited_search(node, limit):
-    if goal_test(node): #TODO: should be implemented
-        pass
-    elif limit == 0: #TODO: should be implemented
-        pass 
+def depth_limited_search(cube, limit, phase, direction):
+    if goal_test(cube):
+        solution.append((cube, phase, direction))
+        return True
+    elif limit == 0:
+        return False 
     else:
+        cutoff = False
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
                 child = rotate(cube, phase, direction) # TODO: To be implemented 
-                result = depth_limited_search(child, limit-1)
-                if result == cutoff:
+                result = depth_limited_search(child, limit-1, phase, direction)
+                if result:
                     cutoff = True
-                elif result != failure:
-                    return result
-            if cutoff:
-                return cutoff
-            else:
-                return failure
+                elif result:
+                    solution.append((cube, phase, direction))
+                    return True
+        if cutoff:
+            return False
 
 
 def main():
