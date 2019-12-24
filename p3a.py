@@ -36,15 +36,6 @@ def goal_test(cube):
             return False
     return True
 
-
-def depth_limited_search_decorator(initial_node):
-    limit = 0
-    while True:
-        result = depth_limited_search(initial_node, limit)
-        if result == "success": 
-            break
-    return result
-
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     tmp = cube[a]
     if direction == "clockwise":
@@ -97,7 +88,7 @@ def depth_limited_search(cube, limit, phase, direction):
         cutoff = False
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
-                child = rotate(cube, phase, direction) # TODO: To be implemented 
+                child = rotate(cube, phase, direction) 
                 result = depth_limited_search(child, limit-1, phase, direction)
                 if result:
                     cutoff = True
@@ -107,6 +98,14 @@ def depth_limited_search(cube, limit, phase, direction):
         if cutoff:
             return False
 
+def depth_limited_search_decorator(cube):
+    limit = 0
+    while True:
+        result = depth_limited_search(cube, limit, None, None)
+        if result == "success": 
+            break
+        limit += 1
+    return result
 
 def main():
     print("Enter your cube:")
