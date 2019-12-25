@@ -85,12 +85,12 @@ def goal_test(node):
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     tmp = cube[a]
-    if direction == "anticlockwise":
+    if direction == "clockwise":
         cube[a] = cube[b]
         cube[b] = cube[c]
         cube[c] = cube[d]
         cube[d] = tmp
-    elif direction == "clockwise":
+    elif direction == "anticlockwise":
         cube[a] = cube[d]
         cube[d] = cube[c]
         cube[c] = cube[b]
@@ -99,7 +99,7 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
 
 
 def rotate(node, phase, direction):
-    cube = node.cube
+    cube = node.cube[:]
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
         tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
@@ -124,24 +124,31 @@ def rotate(node, phase, direction):
         tmp_cube = swap(cube, 20, 21, 22, 23, direction)
         tmp_cube = swap(tmp_cube, 19, 14, 1, 4, direction)
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
-    return tmp_cube
+    return Node(tmp_cube, node, phase, direction)
 
 def initialize_qb():
-    coloring_set = list( x+1 for x in range(PHASE))
+    colors = list(x+1 for x in range(PHASE))
+    coloring_set = list(permutations(colors))
     qb = []
     for coloring in coloring_set:
         cube = []
         for i in range(PHASE):
             for k in range(PHASE_SIZE):
                 cube.insert(i * PHASE_SIZE + k, coloring[i])
-        qb.append(cube)
+        qb.append(Node(cube))
     return qb
 
+def exist(node, explored):
+    for element in explored:
+        if node.cube == element.cube:
+            return True
+    return False
+
 def bidirectional_search(snode):
-    qf = list() # queue of forward 
-    ef = set() # explored set of forward 
+    qf = [snode] # queue of forward 
+    ef = list() # explored set of forward 
     qb = initialize_qb() # queue of backward
-    eb = set() # explored set of backward
+    eb = list() # explored set of backward
     while qb and qf:
         if qf:
             node = qf.pop(0)
@@ -151,8 +158,9 @@ def bidirectional_search(snode):
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
-                    if child not in ef:
-                        ef.add(child)
+                    print_node(child)
+                    if not exist(child, ef):
+                        ef.append(child)
                         qf.append(child)
         if qb:
             node = qb.pop(0)
@@ -162,8 +170,8 @@ def bidirectional_search(snode):
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
-                    if child not in eb:
-                        eb.add(child)
+                    if not exist(child, eb):
+                        eb.append(child)
                         qb.append(child)
     return None
 
