@@ -1,3 +1,4 @@
+from itertools import permutaions
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
@@ -122,17 +123,22 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
     return tmp_cube
 
+def initialize_qb():
+    side_color = list( x+1 for x in range(PHASE))
+    print(list(permutaions(side_color)))
+    return list(permutaions(side_color))
+
 def bidirectional_search(snode):
     qf = list() # queue of forward 
     ef = set() # explored set of forward 
-    qb = list() # queue of backward
+    qb = initialize_qb() # queue of backward
     eb = set() # explored set of backward
     while qb and qf:
         if qf:
             node = qf.pop(0)
             if goal_test(node) or node in qb:
-                solution = find_solution(node) # TODO: Must be implemented
-                return True
+                solution = find_solution(node, True) 
+                return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
@@ -142,14 +148,15 @@ def bidirectional_search(snode):
         if qb:
             node = qb.pop(0)
             if node == snode or node in qf:
-                solution = find_solution() # TODO: Must be implemented
-                return True
+                solution = find_solution(node, False)
+                return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
                     if child not in eb:
                         eb.add(child)
                         qb.append(child)
+    return None
 
 def main():
     cube = []
