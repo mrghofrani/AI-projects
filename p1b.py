@@ -50,7 +50,8 @@ def find_solution(node, from_start):
         solution_part2 = solution_part2[::-1]
     return solution_part1 + solution_part2
 
-def print_cube(cube):
+def print_node(node):
+    cube = node.cube
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
     print(f"       | {cube[3]}  {cube[2]} |")
@@ -65,7 +66,8 @@ def print_cube(cube):
     print(f"       | {cube[23]}  {cube[22]} |")
     print("       +------+")
 
-def goal_test(cube):
+def goal_test(node):
+    cube = node.cube
     sorted = [False, False, False, False, False, False]
     for i in range(PHASE):
         side_is_sorted = True
@@ -96,7 +98,8 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     return cube
 
 
-def rotate(cube, phase, direction):
+def rotate(node, phase, direction):
+    cube = node.cube
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
         tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
@@ -166,10 +169,9 @@ def main():
         for j,k in zip(tmp, range(PHASE_SIZE)):
             cube.insert(i * PHASE_SIZE + k, j)
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
-    print_cube(cube)
-    
-    solution = []
-    (_, solution) = depth_limited_search_decorator(cube, solution)
+    snode = Node(cube)
+    print_node(snode)
+    solution = bidirectional_search(snode)
     print(solution)
 
 if __name__ == "__main__":
