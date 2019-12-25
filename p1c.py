@@ -21,14 +21,16 @@ DIRECTION = {"clockwise", "anticlockwise"}
 #                | 23 22 |
 #                +-------+
 
-class Cube:
-    def __init__(self, phase=None):
+
+class Node:
+    def __init__(self, cube_arg, phase_arg=None, direction_arg = None, parent_arg = None):
         self.h = 0
         self.g = 0
-        self.cube = None
-        self.phase = None
-        self.direction = None
-        self.internal = None
+        self.cube = cube_arg
+        self.phase = phase_arg
+        self.direction = direction_arg
+        self.parent = parent_arg
+
 
 def print_cube(cube):
     print("       +------+")
@@ -94,7 +96,8 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     return cube
 
 
-def rotate(cube, phase, direction):
+def rotate(node, phase, direction):
+    cube = node.cube[:]
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
         tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
@@ -119,7 +122,7 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(cube, 20, 21, 22, 23, direction)
         tmp_cube = swap(tmp_cube, 19, 14, 1, 4, direction)
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
-    return tmp_cube
+    return Node(tmp_cube, phase, direction, node)
 
 
 def aStar(start):
@@ -128,21 +131,23 @@ def aStar(start):
     frontier.add(current)
     while frontier:
         current = min(frontier, key=lambda o:o.g + o.h)
-        if goal_test(frontier): #TODO: should be checked
-            path = []
+
+        if goal_test(current):
+            solution = []
             while current.parent:
-                path.append(current)
+                solution.append((current.phase, current.direction))
                 current = current.parent
-            path.append(current)
-            return path[::-1]
+            solution.append((current.phase, current.direction))
+            return solution[::-1]
+
         frontier.remove(current)
         for phase in range(PHASE):
             for direction in DIRECTION:
-                child = rotate(current.internal[:], phase, direction)
+                child = rotate(current, phase, direction)
                 if child in frontier:  # Check if we have found a better way to reach child cube
                     new_g = current.g + STEP_COST
                     if child.g > new_g:
-                        child.G = new_g
+                        child.g = new_g
                         child.parent = current
                 else:
                     child.g = current.g + STEP_COST
@@ -160,9 +165,9 @@ def main():
             cube.insert(i * PHASE_SIZE + k, j)
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
     print_cube(cube)
-    
-    solution = []
-    (_, solution) = aStar(cube, solution)
+
+    node = Node(cube) # Creating initial node
+    solution = aStar(node)
     print(solution)
 
 if __name__ == "__main__":
