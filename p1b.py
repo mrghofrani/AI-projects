@@ -17,6 +17,10 @@ DIRECTION = {"clockwise", "anticlockwise"}
 #                | 23 22 |
 #                +-------+
 
+class Node:
+    def __init__(self, cube):
+        pass
+
 def print_cube(cube):
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
@@ -91,17 +95,33 @@ def rotate(cube, phase, direction):
     return tmp_cube
 
 def bidirectional_search(cube):
-    q1.append()
-
-def depth_limited_search_decorator(cube, solution):
-    limit = 0
-    while limit <= 8:
-        print(limit)
-        (result, solution) = depth_limited_search(cube, limit, solution)
-        if result: 
-            break
-        limit += 1
-    return result, solution[::-1]
+    qf = list() # queue of forward 
+    ef = set() # explored set of forward 
+    qb = list() # queue of backward
+    eb = set() # explored set of backward
+    while qb and qf:
+        if qf:
+            node = qf.pop(0)
+            if goal_test(node) or node in qb:
+                solution = find_solution() # TODO: Must be implemented
+                return True
+            for phase in range(PHASE):
+                for direction in DIRECTION:
+                    child = rotate(node, phase, direction)
+                    if child not in ef:
+                        ef.add(child)
+                        qf.append(child)
+        if qb:
+            node = qb.pop(0)
+            if initial_test(node) or node in qf:
+                solution = find_solution() # TODO: Must be implemented
+                return True
+            for phase in range(PHASE):
+                for direction in DIRECTION:
+                    child = rotate(node, phase, direction)
+                    if child not in eb:
+                        eb.add(child)
+                        qb.append(child)
 
 def main():
     cube = []
