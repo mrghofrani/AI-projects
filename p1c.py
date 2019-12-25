@@ -48,7 +48,8 @@ def print_cube(cube):
     print("       +------+")
 
 
-def goal_test(cube):
+def goal_test(node):
+    cube = node.cube
     sorted = [False, False, False, False, False, False]
     for i in range(PHASE):
         side_is_sorted = True
