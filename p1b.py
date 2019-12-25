@@ -30,6 +30,25 @@ class Node:
             return self.cube == other.cube
         return False
 
+def find_solution(node, from_start):
+    backup = node
+    solution_part1 = []
+    while node.parent:
+        solution_part1.append((node.phase + 1, node.direction))
+        node = node.parent
+
+    node = backup
+    solution_part2 = []
+    while node.parent:
+        solution_part2.append((backup.phase + 1, backup.direction))
+        node = node.parent
+
+    if from_start:
+        solution_part1 = solution_part1[::-1]
+    else:
+        solution_part2 = solution_part2[::-1]
+    return solution_part1 + solution_part2\
+        
 def print_cube(cube):
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
@@ -103,7 +122,7 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
     return tmp_cube
 
-def bidirectional_search(cube):
+def bidirectional_search(snode):
     qf = list() # queue of forward 
     ef = set() # explored set of forward 
     qb = list() # queue of backward
@@ -112,7 +131,7 @@ def bidirectional_search(cube):
         if qf:
             node = qf.pop(0)
             if goal_test(node) or node in qb:
-                solution = find_solution() # TODO: Must be implemented
+                solution = find_solution(node) # TODO: Must be implemented
                 return True
             for phase in range(PHASE):
                 for direction in DIRECTION:
@@ -122,7 +141,7 @@ def bidirectional_search(cube):
                         qf.append(child)
         if qb:
             node = qb.pop(0)
-            if initial_test(node) or node in qf:
+            if node == snode or node in qf:
                 solution = find_solution() # TODO: Must be implemented
                 return True
             for phase in range(PHASE):
