@@ -3,7 +3,6 @@ from copy import deepcopy
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
-cube = [] 
 solution = []
 
 # My rubik's cube internal indexing is
@@ -54,12 +53,12 @@ def goal_test(cube):
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     tmp = cube[a]
-    if direction == "clockwise":
+    if direction == "anticlockwise":
         cube[a] = cube[b]
         cube[b] = cube[c]
         cube[c] = cube[d]
         cube[d] = tmp
-    elif direction == "anticlockwise":
+    elif direction == "clockwise":
         cube[a] = cube[d]
         cube[d] = cube[c]
         cube[c] = cube[b]
@@ -105,14 +104,14 @@ def depth_limited_search(cube, limit, solution):
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
                 print_cube(cube)
-                child = rotate(cube, phase, direction) 
+                child = rotate(cube[:], phase, direction)
                 print_cube(child)
                 result, solution = depth_limited_search(child, limit-1, solution)
                 if result:
                     solution.append((phase+1, direction))
                     return True, solution
                 else:
-                    cutoff = False
+                    cutoff = True
         if cutoff:
             return False, []
 
@@ -126,6 +125,7 @@ def depth_limited_search_decorator(cube, solution):
     return result, solution[::-1]
 
 def main():
+    cube = []
     print("Enter your cube:")
     for i in range(PHASE):
         tmp = input(f"[{i+1}]:").split(',')
