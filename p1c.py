@@ -1,5 +1,9 @@
+from copy import deepcopy
 PHASE = 6
 PHASE_SIZE = 4
+HEURISTIC1_CONSTANT = 4
+HEURISTIC2_CONSTANT = 2
+HEURISTIC3_CONSTANT = 1
 DIRECTION = {"clockwise", "anticlockwise"}
 
 # My rubik's cube internal indexing is
@@ -17,6 +21,15 @@ DIRECTION = {"clockwise", "anticlockwise"}
 #                | 23 22 |
 #                +-------+
 
+class Cube:
+    def __init__(self, phase=None):
+        self.h = 0
+        self.g = 0
+        self.cube = None
+        self.phase = None
+        self.direction = None
+        self.internal = None
+
 def print_cube(cube):
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
@@ -31,6 +44,7 @@ def print_cube(cube):
     print(f"       | {cube[20]}  {cube[21]} |")
     print(f"       | {cube[23]}  {cube[22]} |")
     print("       +------+")
+
 
 def goal_test(cube):
     sorted = [False, False, False, False, False, False]
@@ -47,6 +61,23 @@ def goal_test(cube):
         if not item:
             return False
     return True
+
+
+def heuristic(cube):
+    cube = cube.internal
+    h1 = 0
+    h2 = 0
+    h3 = 0
+    for i in range(PHASE):
+        if len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
+            h1 += HEURISTIC1_CONSTANT
+    for i in range(PHASE):
+        if (len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) + 1) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
+            h2 += HEURISTIC2_CONSTANT
+    for i in range(PHASE):
+        if (len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) + 2) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
+            h3 += HEURISTIC3_CONSTANT
+
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     tmp = cube[a]
@@ -90,18 +121,38 @@ def rotate(cube, phase, direction):
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
     return tmp_cube
 
-def bidirectional_search(cube):
-    q1.append()
 
-def depth_limited_search_decorator(cube, solution):
-    limit = 0
-    while limit <= 8:
-        print(limit)
-        (result, solution) = depth_limited_search(cube, limit, solution)
-        if result: 
-            break
-        limit += 1
-    return result, solution[::-1]
+def aStar(start, goal, grid):
+    frontier = set()
+    current = start
+    frontier.add(current)
+    while frontier:
+        current = min(frontier, key=lambda o:o.G + o.H)
+        if goal_test(frontier): #TODO: should be checked
+            path = []
+            while current.parent:
+                path.append(current)
+                current = current.parent
+            path.append(current)
+            return path[::-1]
+        frontier.remove(current)
+        for phase in range(PHASE):
+            for direction in DIRECTION:
+                child = rotate(cube[:], phase, direction)
+                if cube in frontier:  # Check if we have found a better way to reach child cube
+                    new_g = current.G + 1
+                    if node.G > new_g:
+                        #If so, update the node to have a new parent
+                        node.G = new_g
+                        node.parent = current
+                else:
+                    #If it isn't in the open set, calculate the G and H score for the node
+                    node.G = current.G + current.move_cost(node)
+                    node.H = heuristic(node, goal)
+                    #Set the parent to our current item
+                    node.parent = current
+                    #Add it to the set
+                    openset.add(node)
 
 def main():
     cube = []
