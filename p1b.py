@@ -47,8 +47,8 @@ def find_solution(node, from_start):
         solution_part1 = solution_part1[::-1]
     else:
         solution_part2 = solution_part2[::-1]
-    return solution_part1 + solution_part2\
-        
+    return solution_part1 + solution_part2
+
 def print_cube(cube):
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
