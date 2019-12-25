@@ -31,8 +31,8 @@ class Node:
         self.direction = direction_arg
         self.parent = parent_arg
 
-
-def print_cube(cube):
+def print_node(node):
+    cube = node.cube
     print("       +------+")
     print(f"       | {cube[0]}  {cube[1]} |")
     print(f"       | {cube[3]}  {cube[2]} |")
@@ -137,9 +137,9 @@ def aStar(start):
         if goal_test(current):
             solution = []
             while current.parent:
-                solution.append((current.phase, current.direction))
+                solution.append((current.phase + 1, current.direction))
                 current = current.parent
-            solution.append((current.phase, current.direction))
+                
             return solution[::-1]
 
         frontier.remove(current)
@@ -166,9 +166,9 @@ def main():
         for j,k in zip(tmp, range(PHASE_SIZE)):
             cube.insert(i * PHASE_SIZE + k, j)
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
-    print_cube(cube)
 
     node = Node(cube) # Creating initial node
+    print_node(node)
     solution = aStar(node)
     print(solution)
 
