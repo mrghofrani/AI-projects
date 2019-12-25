@@ -66,10 +66,11 @@ def goal_test(node):
     return True
 
 
-def heuristic(cube):
+def heuristic(node):
     h1 = 0
     h2 = 0
     h3 = 0
+    cube = node.cube
     for i in range(PHASE):
         if len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
             h1 += HEURISTIC1_CONSTANT
