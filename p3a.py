@@ -1,9 +1,7 @@
 from copy import deepcopy
-
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
-solution = []
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -69,7 +67,7 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
 def rotate(cube, phase, direction):
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
-        tmp_cube = swap(tmp_cube, 4, 8,12, 22, direction)
+        tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
         tmp_cube = swap(tmp_cube, 5, 9, 13, 23, direction)
     elif phase == 1:
         tmp_cube = swap(cube, 4, 5, 6, 7, direction)
@@ -95,19 +93,18 @@ def rotate(cube, phase, direction):
 
 def depth_limited_search(cube, limit, solution):
     if goal_test(cube):
+        print_cube(cube)
         return True, solution
     elif limit == 0:
-        print("limit Reached")
         return False, []
     else:
         cutoff = False
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
-                print_cube(cube)
                 child = rotate(cube[:], phase, direction)
-                print_cube(child)
-                result, solution = depth_limited_search(child, limit-1, solution)
+                result, solution = depth_limited_search(child, limit-1, solution[:])
                 if result:
+                    print_cube(cube)
                     solution.append((phase+1, direction))
                     return True, solution
                 else:
@@ -117,7 +114,8 @@ def depth_limited_search(cube, limit, solution):
 
 def depth_limited_search_decorator(cube, solution):
     limit = 0
-    while True:
+    while limit <= 8:
+        print(limit)
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
@@ -131,6 +129,8 @@ def main():
         tmp = input(f"[{i+1}]:").split(',')
         for j,k in zip(tmp, range(PHASE_SIZE)):
             cube.insert(i * PHASE_SIZE + k, j)
+        cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
+    print_cube(cube)
     
     solution = []
     (_, solution) = depth_limited_search_decorator(cube, solution)
