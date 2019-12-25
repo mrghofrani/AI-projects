@@ -1,4 +1,4 @@
-from itertools import permutaions
+from itertools import permutations
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
