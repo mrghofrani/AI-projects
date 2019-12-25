@@ -1,9 +1,9 @@
-from copy import deepcopy
 PHASE = 6
 PHASE_SIZE = 4
 HEURISTIC1_CONSTANT = 4
 HEURISTIC2_CONSTANT = 2
 HEURISTIC3_CONSTANT = 1
+STEP_COST = 1
 DIRECTION = {"clockwise", "anticlockwise"}
 
 # My rubik's cube internal indexing is
@@ -64,7 +64,6 @@ def goal_test(cube):
 
 
 def heuristic(cube):
-    cube = cube.internal
     h1 = 0
     h2 = 0
     h3 = 0
@@ -77,6 +76,7 @@ def heuristic(cube):
     for i in range(PHASE):
         if (len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) + 2) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
             h3 += HEURISTIC3_CONSTANT
+    return h1 + h2 + h3
 
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
@@ -122,12 +122,12 @@ def rotate(cube, phase, direction):
     return tmp_cube
 
 
-def aStar(start, goal, grid):
+def aStar(start):
     frontier = set()
     current = start
     frontier.add(current)
     while frontier:
-        current = min(frontier, key=lambda o:o.G + o.H)
+        current = min(frontier, key=lambda o:o.g + o.h)
         if goal_test(frontier): #TODO: should be checked
             path = []
             while current.parent:
@@ -138,21 +138,18 @@ def aStar(start, goal, grid):
         frontier.remove(current)
         for phase in range(PHASE):
             for direction in DIRECTION:
-                child = rotate(cube[:], phase, direction)
-                if cube in frontier:  # Check if we have found a better way to reach child cube
-                    new_g = current.G + 1
-                    if node.G > new_g:
-                        #If so, update the node to have a new parent
-                        node.G = new_g
-                        node.parent = current
+                child = rotate(current.internal[:], phase, direction)
+                if child in frontier:  # Check if we have found a better way to reach child cube
+                    new_g = current.g + STEP_COST
+                    if child.g > new_g:
+                        child.G = new_g
+                        child.parent = current
                 else:
-                    #If it isn't in the open set, calculate the G and H score for the node
-                    node.G = current.G + current.move_cost(node)
-                    node.H = heuristic(node, goal)
-                    #Set the parent to our current item
-                    node.parent = current
-                    #Add it to the set
-                    openset.add(node)
+                    child.g = current.g + STEP_COST
+                    child.h = heuristic(child)
+                    child.parent = current
+                    frontier.add(child)
+
 
 def main():
     cube = []
@@ -165,7 +162,7 @@ def main():
     print_cube(cube)
     
     solution = []
-    (_, solution) = depth_limited_search_decorator(cube, solution)
+    (_, solution) = aStar(cube, solution)
     print(solution)
 
 if __name__ == "__main__":
