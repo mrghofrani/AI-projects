@@ -127,9 +127,15 @@ def rotate(node, phase, direction):
     return tmp_cube
 
 def initialize_qb():
-    side_color = list( x+1 for x in range(PHASE))
-    print(list(permutaions(side_color)))
-    return list(permutaions(side_color))
+    coloring_set = list( x+1 for x in range(PHASE))
+    qb = []
+    for coloring in coloring_set:
+        cube = []
+        for i in range(PHASE):
+            for k in range(PHASE_SIZE):
+                cube.insert(i * PHASE_SIZE + k, coloring[i])
+        qb.append(cube)
+    return qb
 
 def bidirectional_search(snode):
     qf = list() # queue of forward 
