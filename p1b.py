@@ -17,9 +17,18 @@ DIRECTION = {"clockwise", "anticlockwise"}
 #                | 23 22 |
 #                +-------+
 
+
 class Node:
-    def __init__(self, cube):
-        pass
+    def __init__(self, cube_arg, parent_arg=None, phase_arg=None, direction_arg=None):
+        self.cube = cube_arg
+        self.phase = phase_arg
+        self.direction = direction_arg
+        self.parent = parent_arg
+
+    def __eq__(self, other):
+        if isinstance(other, Node):
+            return self.cube == other.cube
+        return False
 
 def print_cube(cube):
     print("       +------+")
