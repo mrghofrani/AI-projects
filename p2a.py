@@ -1,7 +1,7 @@
-from random import randint, choices
+from random import randint, choices, choice
 from itertools import chain
 
-NUMBER_OF_GENERATIONS = 50
+NUMBER_OF_GENERATIONS = 2
 POPULATION_SIZE = 20
 MAP_SIZE = 31
 IRAN_PROVINCES = ["Alborz", "Ardabil", "East Azerbaijan", "West Azerbaijan", "Bushehr", "Chaharmahal and Bakhtiari", "Fars", "Gilan", "Golestan", "Hamedan", "Hormozgan", "Ilam", "Isfahan", 
@@ -27,11 +27,11 @@ IRAN_MAP = {
     "Markazi": ["Hamedan", "Qazvin", "Alborz", "Tehran", "Qom", "Isfahan", "Lorestan"],
     "Qom": ["Markazi", "Tehran", "Semnan", "Isfahan"],
     "Isfahan": ["Qom", "Semnan", "South Khorasan", "Yazd", "Fars", "Kohgiluyeh and Boyer-Ahmad", "Chaharmahal and Bakhtiari", "Lorestan", "Markazi"],
-    "South Korasan": ["Razavi Khorasan", "Semnan", "Isfahan", "Yazd", "Kerman", "Sistan and Baluchestan"],
+    "South Khorasan": ["Razavi Khorasan", "Semnan", "Isfahan", "Yazd", "Kerman", "Sistan and Baluchestan"],
     "Yazd": ["Isfahan", "South Khorasan", "Kerman", "Fars"],
     "Fars": ["Yazd", "Isfahan", "Kohgiluyeh and Boyer-Ahmad", "Bushehr", "Hormozgan", "Kerman"],
     "Kohgiluyeh and Boyer-Ahmad": ["Fars", "Isfahan", "Chaharmahal and Bakhtiari", "Khuzestan", "Bushehr"],
-    "Chaharmahal and Bakhtiary": ["Isfahan", "Kohgiluyeh and Boyer-Ahmad", "Khuzestan", "Lorestan"],
+    "Chaharmahal and Bakhtiari": ["Isfahan", "Kohgiluyeh and Boyer-Ahmad", "Khuzestan", "Lorestan"],
     "Khuzestan": ["Bushehr", "Kohgiluyeh and Boyer-Ahmad", "Chaharmahal and Bakhtiari", "Lorestan", "Ilam"],
     "Ilam": ["Khuzestan", "Lorestan", "Kermanshah"],
     "Lorestan": ["Ilam", "Kermanshah", "Hamedan", "Markazi", "Isfahan", "Chaharmahal and Bakhtiari", "Khuzestan"],
@@ -41,7 +41,7 @@ IRAN_MAP = {
     "Sistan and Baluchestan": ["Hormozgan", "Kerman", "South Khorasan"]
 }
 COLOR = 4
-M = lambda: len(list(chain(*IRAN_MAP.values())))/2
+M = len(list(chain(*IRAN_MAP.values())))/2
 TORNUMENT_SIZE = 2
 MUTATION_RATE = 0.02
 
@@ -81,7 +81,7 @@ def fitness_function(population):
 
 def select_parents(population):
     parent = []
-    for i in range(POPULATION_SIZE // 2):
+    for _ in range(POPULATION_SIZE):
         tmp_parent = choices(population, k=TORNUMENT_SIZE)
         dominant_parent = max(tmp_parent, key=lambda p: p.fitness)
         parent.append(dominant_parent)
@@ -90,22 +90,26 @@ def select_parents(population):
 
 def crossover(parent, p1, p2):
     cross_point = MAP_SIZE // 2
-    p1_cmap = parent[p1].colored_map[:]
-    p2_cmap = parent[p2].colored_map[:]
-    p1_cmap[:cross_point], p2_cmap[cross_point+1:] = p2_cmap[:cross_point], p1_cmap[cross_point+1:]
-    return Map(p1_cmap), Map(p2_cmap)
+    p1_cmap = parent[p1].cmap
+    p2_cmap = parent[p2].cmap
+    child1_cmap = dict()
+    child2_cmap = dict()
+    for city in IRAN_PROVINCES[:cross_point]:
+        child1_cmap[city] = p2_cmap[city]
+        child2_cmap[city] = p1_cmap[city]
+    for city in IRAN_PROVINCES[cross_point:]:
+        child1_cmap[city] = p1_cmap[city]
+        child2_cmap[city] = p2_cmap[city]
+    return Map(child1_cmap), Map(child2_cmap)
 
 def generate_new_population(parent):
     population = []
     visited = []
-    p1 = float("inf")
-    p2 = float("inf")
-    for i in range(POPULATION_SIZE // 2):
-        while p1 in visited:
-            p1 = randint(0, POPULATION_SIZE // 2 - 1)
+    selections = range(POPULATION_SIZE)
+    for _ in range(POPULATION_SIZE // 2):
+        p1 = choice(list(set(selections) - set(visited)))
         visited.append(p1)
-        while p2 in visited:
-            p2 = randint(0, POPULATION_SIZE // 2 - 1)
+        p2 = choice(list(set(selections) - set(visited)))
         visited.append(p2)
         child1, child2 = crossover(parent, p1, p2)
         population.append(child1)
@@ -122,7 +126,7 @@ def mutation(population):
         if (chromosome,genome) in mutated:
             continue
         mutated.add((chromosome, genome))
-        population[chromosome].colored_map[genome] = randint(1,COLOR)
+        population[chromosome].cmap[genome] = randint(1,COLOR)
 
 
 def main():
@@ -134,6 +138,7 @@ def main():
         population = generate_new_population(parents)
         mutation(population)
         generation += 1
+        print("-")
 
 
 
