@@ -1,6 +1,7 @@
 from random import randint, choices
 from itertools import chain
 
+NUMBER_OF_GENERATIONS = 50
 POPULATION_SIZE = 20
 MAP_SIZE = 31
 IRAN_PROVINCES = ["Alborz", "Ardabil", "East Azerbaijan", "West Azerbaijan", "Bushehr", "Chaharmahal and Bakhtiari", "Fars", "Gilan", "Golestan", "Hamedan", "Hormozgan", "Ilam", "Isfahan", 
@@ -42,6 +43,8 @@ IRAN_MAP = {
 COLOR = 4
 M = lambda: len(list(chain(*IRAN_MAP.values())))/2
 TORNUMENT_SIZE = 2
+MUTATION_RATE = 0.02
+
 
 class Map:
     def __init__(self, colored_map, fitness=None):
@@ -110,11 +113,27 @@ def generate_new_population(parent):
     return population
 
 
+def mutation(population):
+    mutated_genomes = POPULATION_SIZE * MAP_SIZE * MUTATION_RATE
+    mutated = set()
+    while len(mutated) < mutated_genomes:
+        chromosome = randint(0, POPULATION_SIZE-1)
+        genome = randint(0, MAP_SIZE-1)
+        if (chromosome,genome) in mutated:
+            continue
+        mutated.add((chromosome, genome))
+        population[chromosome].colored_map[genome] = randint(1,COLOR)
+
+
 def main():
     population = populate()
-    fitness_function(population)
-    parents = select_parents(population)
-    population = generate_new_population(parents)
+    generation = 0
+    while generation < NUMBER_OF_GENERATIONS:
+        fitness_function(population)
+        parents = select_parents(population)
+        population = generate_new_population(parents)
+        mutation(population)
+        generation += 1
 
 
 
