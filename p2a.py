@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choices
 from itertools import chain
 
 POPULATION_SIZE = 20
@@ -41,6 +41,7 @@ IRAN_MAP = {
 }
 COLOR = 4
 M = lambda: len(list(chain(*IRAN_MAP.values())))/2
+TORNUMENT_SIZE = 2
 
 class Map:
     def __init__(self, colored_map, fitness=None):
@@ -62,7 +63,7 @@ class Map:
             
 def populate():
     population = []
-    for i in range(POPULATION_SIZE):
+    for _ in range(POPULATION_SIZE):
         colored_map = dict()
         for city in IRAN_PROVINCES:
             colored_map[city] = randint(1,COLOR)
@@ -70,15 +71,24 @@ def populate():
     return population
 
 
-
-
 def fitness_function(population):
     for element in population:
         element.calculate_fitness()
 
+
+def select_parents(population):
+    parent = []
+    for i in range(POPULATION_SIZE // 2):
+        tmp_parent = choices(population, k=TORNUMENT_SIZE)
+        dominant_parent = max(tmp_parent, key=lambda p: p.fitness)
+        parent.append(dominant_parent)
+    return parent
+
+
 def main():
     population = populate()
     fitness_function(population)
+    parents = select_parents(population)
 
 
 if __name__ == "__main__":
