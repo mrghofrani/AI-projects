@@ -44,11 +44,11 @@ COLOR = 4
 def populate():
     population = []
     for i in range(POPULATION_SIZE):
-        map = []
-        for j in range(MAP_SIZE):
-            map.append(randint(1,COLOR))
-        population.append(map)
-    return map
+        colored_provinces = dict()
+        for city in IRAN_PROVINCES:
+            colored_provinces[city] = randint(1,COLOR)
+        population.append(colored_provinces)
+    return population
 
 
 def main():
