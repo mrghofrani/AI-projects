@@ -1,8 +1,8 @@
 from random import randint, choices, choice
 from itertools import chain
 
-NUMBER_OF_GENERATIONS = 2
-POPULATION_SIZE = 20
+NUMBER_OF_GENERATIONS = 500
+POPULATION_SIZE = 1000
 MAP_SIZE = 31
 IRAN_PROVINCES = ["Alborz", "Ardabil", "East Azerbaijan", "West Azerbaijan", "Bushehr", "Chaharmahal and Bakhtiari", "Fars", "Gilan", "Golestan", "Hamedan", "Hormozgan", "Ilam", "Isfahan", 
                 "Kerman", "Kermanshah", "North Khorasan", "Razavi Khorasan", "South Khorasan", "Khuzestan", "Kohgiluyeh and Boyer-Ahmad", "Kurdistan", "Lorestan", "Markazi", "Mazandaran",
@@ -102,6 +102,7 @@ def crossover(parent, p1, p2):
         child2_cmap[city] = p2_cmap[city]
     return Map(child1_cmap), Map(child2_cmap)
 
+
 def generate_new_population(parent):
     population = []
     visited = []
@@ -122,7 +123,7 @@ def mutation(population):
     mutated = set()
     while len(mutated) < mutated_genomes:
         chromosome = randint(0, POPULATION_SIZE-1)
-        genome = randint(0, MAP_SIZE-1)
+        genome = choice(IRAN_PROVINCES)
         if (chromosome,genome) in mutated:
             continue
         mutated.add((chromosome, genome))
@@ -132,14 +133,23 @@ def mutation(population):
 def main():
     population = populate()
     generation = 0
+    for element in population:
+        print(element.cmap)
+        print(element.fitness)
+        print()
+
     while generation < NUMBER_OF_GENERATIONS:
         fitness_function(population)
         parents = select_parents(population)
         population = generate_new_population(parents)
         mutation(population)
         generation += 1
-        print("-")
-
+    
+    fitness_function(population)
+    for element in population:
+        print(element.cmap)
+        print(element.fitness)
+        print()
 
 
 if __name__ == "__main__":
