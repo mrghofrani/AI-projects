@@ -1,4 +1,5 @@
 from random import randint
+from itertools import chain
 
 POPULATION_SIZE = 20
 MAP_SIZE = 31
@@ -39,20 +40,46 @@ IRAN_MAP = {
     "Sistan and Baluchestan": ["Hormozgan", "Kerman", "South Khorasan"]
 }
 COLOR = 4
+M = lambda: len(list(chain(*IRAN_MAP.values())))/2
 
+class Map:
+    def __init__(self, colored_map, fitness=None):
+        self.cmap = colored_map
+        self.fitness = fitness
 
+    def calculate_fitness(self):
+        sigma_sum = 0
+        for city in IRAN_MAP:
+            sigma = 1
+            city_color = self.cmap[city]
+            for adj in IRAN_MAP[city]:
+                if city_color == self.cmap[adj]:
+                    sigma = 0
+                    break
+            sigma_sum += sigma
+        self.fitness = sigma_sum / M
+    
+            
 def populate():
     population = []
     for i in range(POPULATION_SIZE):
-        colored_provinces = dict()
+        colored_map = dict()
         for city in IRAN_PROVINCES:
-            colored_provinces[city] = randint(1,COLOR)
-        population.append(colored_provinces)
+            colored_map[city] = randint(1,COLOR)
+        population.append(Map(colored_map))
     return population
 
 
+
+
+def fitness_function(population):
+    for element in population:
+        element.calculate_fitness()
+
 def main():
     population = populate()
+    fitness_function(population)
+
 
 if __name__ == "__main__":
     main()
