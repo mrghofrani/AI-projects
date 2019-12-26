@@ -1,6 +1,6 @@
 from random import random, randint, choice
-from sys.float import epsilon
-from math import exp
+from math import exp, log
+from itertools import chain
 
 
 IRAN_PROVINCES = ["Alborz", "Ardabil", "East Azerbaijan", "West Azerbaijan", "Bushehr", "Chaharmahal and Bakhtiari", "Fars", "Gilan", "Golestan", "Hamedan", "Hormozgan", "Ilam", "Isfahan", 
@@ -41,7 +41,8 @@ IRAN_MAP = {
 }
 COLOR = 4
 ALPHA = 0.7
-T0 = 
+T0 = 20
+EPSILON = 0.0001
 M = len(list(chain(*IRAN_MAP.values())))/2
 
 
@@ -77,16 +78,16 @@ def successor(state):
     color = randint(1, COLOR)
     cmap[city] = color
     return Map(cmap)
-    
+
 
 def simulated_annealing(state, schedule):
     curr = state
     k = 0
     while True:
         T = schedule(k)
-        if T < epsilon:
+        if T < EPSILON:
             return curr
-        adj = successor(current)
+        adj = successor(curr)
         delta_E = adj.fitness - curr.fitness
         if delta_E > 0:
             curr = adj
@@ -98,8 +99,15 @@ def simulated_annealing(state, schedule):
 
 def main():
     state = generate_state()
-    answer = simulated_annealing()
-
+    schedule ={
+        '1': lambda k: T0 * ALPHA**k,
+        '2': lambda k: T0 / (1 + ALPHA * log(1 + k)),
+        '3': lambda k: T0 / (1 + ALPHA * k),
+        '4': lambda k: T0 / (1 + ALPHA * k**2)
+    }
+    c = input("Run with algorithm: (1 to 4) ")
+    answer = simulated_annealing(state, schedule[c])
+    print(answer.cmap)
 
 if __name__ == "__main__":
     main() 
