@@ -158,7 +158,6 @@ def bidirectional_search(snode):
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
-                    print_node(child)
                     if not exist(child, ef):
                         ef.append(child)
                         qf.append(child)
