@@ -85,10 +85,25 @@ def select_parents(population):
     return parent
 
 
+def generate_new_population(parent):
+    visited = []
+    p1 = float("inf")
+    p2 = float("inf")
+    for i in range(POPULATION_SIZE // 2):
+        while p1 in visited:
+            p1 = randint(0, POPULATION_SIZE // 2 - 1)
+        visited.append(p1)
+        while p2 in visited:
+            p2 = randint(0, POPULATION_SIZE // 2 - 1)
+        visited.append(p2)
+        child1, child2 = crossover(parent, p1, p2)
+
+
 def main():
     population = populate()
     fitness_function(population)
     parents = select_parents(population)
+
 
 
 if __name__ == "__main__":
