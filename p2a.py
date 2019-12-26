@@ -85,7 +85,15 @@ def select_parents(population):
     return parent
 
 
+def crossover(parent, p1, p2):
+    cross_point = MAP_SIZE // 2
+    p1_cmap = parent[p1].colored_map[:]
+    p2_cmap = parent[p2].colored_map[:]
+    p1_cmap[:cross_point], p2_cmap[cross_point+1:] = p2_cmap[:cross_point], p1_cmap[cross_point+1:]
+    return Map(p1_cmap), Map(p2_cmap)
+
 def generate_new_population(parent):
+    population = []
     visited = []
     p1 = float("inf")
     p2 = float("inf")
@@ -97,12 +105,16 @@ def generate_new_population(parent):
             p2 = randint(0, POPULATION_SIZE // 2 - 1)
         visited.append(p2)
         child1, child2 = crossover(parent, p1, p2)
+        population.append(child1)
+        population.append(child2)
+    return population
 
 
 def main():
     population = populate()
     fitness_function(population)
     parents = select_parents(population)
+    population = generate_new_population(parents)
 
 
 
