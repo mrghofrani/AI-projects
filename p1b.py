@@ -20,19 +20,24 @@ DIRECTION = {"clockwise", "anticlockwise"}
 
 
 class Node:
-    def __init__(self, cube_arg, parent_arg=None, phase_arg=None, direction_arg=None):
+    def __init__(self, cube_arg, fparent=None, fphase=None, fdirection=None, bparent=None, bphase=None, bdirection=None):
         self.cube = cube_arg
-        self.phase = phase_arg
-        self.direction = direction_arg
-        self.parent = parent_arg
+        self.forward_parent = fparent
+        self.forward_phase = fphase
+        self.forward_direction = fdirection
+       
+        self.backward_parent = bparent
+        self.backward_phase = bphase
+        self.backward_direction = bdirection
 
     def __eq__(self, other):
         if isinstance(other, Node):
             return self.cube == other.cube
         return False
-import copy
+
+
 def find_solution(node, from_start):
-    backup = copy.deepcopy(node)
+    backup = node
     solution_part1 = []
     while node.parent:
         solution_part1.append((node.phase + 1, node.direction))
@@ -50,6 +55,7 @@ def find_solution(node, from_start):
         solution_part2 = solution_part2[::-1]
     return solution_part1 + solution_part2
 
+
 def print_node(node):
     cube = node.cube
     print("       +------+")
@@ -65,6 +71,7 @@ def print_node(node):
     print(f"       | {cube[20]}  {cube[21]} |")
     print(f"       | {cube[23]}  {cube[22]} |")
     print("       +------+")
+
 
 def goal_test(node):
     cube = node.cube
@@ -83,6 +90,7 @@ def goal_test(node):
             return False
     return True
 
+
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     tmp = cube[a]
     if direction == "clockwise":
@@ -98,7 +106,7 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
     return cube
 
 
-def rotate(node, phase, direction):
+def rotate(node, phase, direction, forward):
     cube = node.cube[:]
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
@@ -124,7 +132,11 @@ def rotate(node, phase, direction):
         tmp_cube = swap(cube, 20, 21, 22, 23, direction)
         tmp_cube = swap(tmp_cube, 19, 14, 1, 4, direction)
         tmp_cube = swap(tmp_cube, 7, 18, 13, 0, direction)
-    return Node(tmp_cube, node, phase, direction)
+    if forward:
+        return Node(tmp_cube, fparent=node, fphase=phase, fdirection=direction)
+    else:
+        return Node(tmp_cube, bparent=node, bphase=phase, bdirection=direction)
+
 
 def initialize_qb():
     colors = list(x+1 for x in range(PHASE))
@@ -138,11 +150,13 @@ def initialize_qb():
         qb.append(Node(cube))
     return qb
 
+
 def exist(node, explored):
     for element in explored:
         if node.cube == element.cube:
             return True
     return False
+
 
 def bidirectional_search(snode):
     qf = [snode] # queue of forward 
@@ -152,26 +166,30 @@ def bidirectional_search(snode):
     while qb and qf:
         if qf:
             node = qf.pop(0)
-            if goal_test(node) or (node in qb):
+            if goal_test(node) or (node in eb):
                 solution = find_solution(node, True) 
                 return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
-                    child = rotate(node, phase, direction)
-                    if not exist(child, ef):
+                    child = rotate(node, phase, direction, forward=True)
+                    if child not in ef:
                         ef.append(child)
                         qf.append(child)
+                        print("ef " + str(len(ef)))
+                        print("qf " + str(len(qf)))
         if qb:
             node = qb.pop(0)
-            if (node == snode) or (node in qf):
+            if (node == snode) or (node in ef):
                 solution = find_solution(node, False)
                 return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
-                    child = rotate(node, phase, direction)
-                    if not exist(child, eb):
+                    child = rotate(node, phase, direction, forward=False)
+                    if child not in eb:
                         eb.append(child)
                         qb.append(child)
+                        print("eb " + str(len(eb)))
+                        print("qb " + str(len(qb)))
     return None
 
 def main():
