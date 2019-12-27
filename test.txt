@@ -24,6 +24,7 @@
 6,6,4,2
 
 #[(4, 'clockwise'), (2, 'clockwise'), (5, 'anticlockwise'), (4, 'anticlockwise'), (3, 'anticlockwise'), (5, 'anticlockwise'), (3, 'clockwise')]
+#[(2, 'clockwise'), (3, 'clockwise'), (5, 'clockwise'), (3, 'clockwise'), (2, 'clockwise'), (2, 'clockwise'), (2, 'clockwise'), (2, 'clockwise'), (2, 'clockwise'), (2, 'clockwise')]
 5,6,3,4
 2,1,5,4
 2,6,3,6

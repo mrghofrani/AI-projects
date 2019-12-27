@@ -30,9 +30,9 @@ class Node:
         if isinstance(other, Node):
             return self.cube == other.cube
         return False
-
+import copy
 def find_solution(node, from_start):
-    backup = node
+    backup = copy.deepcopy(node)
     solution_part1 = []
     while node.parent:
         solution_part1.append((node.phase + 1, node.direction))
@@ -146,13 +146,13 @@ def exist(node, explored):
 
 def bidirectional_search(snode):
     qf = [snode] # queue of forward 
-    ef = list() # explored set of forward 
-    qb = initialize_qb() # queue of backward
-    eb = list() # explored set of backward
+    ef = [snode] # explored set of forward 
+    qb = initialize_qb() # queue of backward]
+    eb = initialize_qb() # explored set of backward
     while qb and qf:
         if qf:
             node = qf.pop(0)
-            if goal_test(node) or node in qb:
+            if goal_test(node) or (node in qb):
                 solution = find_solution(node, True) 
                 return solution
             for phase in range(PHASE):
@@ -163,7 +163,7 @@ def bidirectional_search(snode):
                         qf.append(child)
         if qb:
             node = qb.pop(0)
-            if node == snode or node in qf:
+            if (node == snode) or (node in qf):
                 solution = find_solution(node, False)
                 return solution
             for phase in range(PHASE):
