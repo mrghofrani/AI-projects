@@ -32,7 +32,7 @@ class Node:
 
     def __eq__(self, other):
         if isinstance(other, Node):
-            return self.cube == other.cube
+            return list(map(int, self.cube)) == list(map(int, other.cube))
         return False
 
 
@@ -46,7 +46,7 @@ def find_solution(node, from_start):
     node = backup
     solution_part2 = []
     while node.parent:
-        solution_part2.append((backup.phase + 1, backup.direction))
+        solution_part2.append((node.phase + 1, node.direction))
         node = node.parent
 
     if from_start:
@@ -166,30 +166,30 @@ def bidirectional_search(snode):
     while qb and qf:
         if qf:
             node = qf.pop(0)
-            if goal_test(node) or (node in eb):
+            if node in eb:
                 solution = find_solution(node, True) 
                 return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction, forward=True)
-                    if child not in ef:
+                    if not exist(child, ef):
                         ef.append(child)
                         qf.append(child)
-                        print("ef " + str(len(ef)))
-                        print("qf " + str(len(qf)))
+                        # print("ef " + str(len(ef)))
+                        # print("qf " + str(len(qf)))
         if qb:
             node = qb.pop(0)
-            if (node == snode) or (node in ef):
+            if node in ef:
                 solution = find_solution(node, False)
                 return solution
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction, forward=False)
-                    if child not in eb:
+                    if not exist(child, eb):
                         eb.append(child)
                         qb.append(child)
-                        print("eb " + str(len(eb)))
-                        print("qb " + str(len(qb)))
+                        # print("eb " + str(len(eb)))
+                        # print("qb " + str(len(qb)))          
     return None
 
 def main():
