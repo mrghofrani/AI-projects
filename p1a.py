@@ -93,7 +93,6 @@ def rotate(cube, phase, direction):
 
 def depth_limited_search(cube, limit, solution):
     if goal_test(cube):
-        print_cube(cube)
         return True, solution
     elif limit == 0:
         return False, []
@@ -104,7 +103,6 @@ def depth_limited_search(cube, limit, solution):
                 child = rotate(cube[:], phase, direction)
                 result, solution = depth_limited_search(child, limit-1, solution[:])
                 if result:
-                    print_cube(cube)
                     solution.append((phase+1, direction))
                     return True, solution
                 else:
@@ -115,7 +113,6 @@ def depth_limited_search(cube, limit, solution):
 def depth_limited_search_decorator(cube, solution):
     limit = 0
     while limit <= 8:
-        print(limit)
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
@@ -130,7 +127,6 @@ def main():
         for j,k in zip(tmp, range(PHASE_SIZE)):
             cube.insert(i * PHASE_SIZE + k, j)
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
-    print_cube(cube)
     
     solution = []
     (_, solution) = depth_limited_search_decorator(cube, solution)

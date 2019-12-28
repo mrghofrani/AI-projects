@@ -38,8 +38,6 @@ def find_solution(fnode, bnode):
         solution_part1.append((fnode.phase + 1, fnode.direction))
         fnode = fnode.parent
 
-    print(solution_part1[::-1])
-
     solution_part2 = []
     while bnode.parent:
         reverse_rotate = list(set(DIRECTION) - set(bnode.direction))[0]
@@ -64,24 +62,6 @@ def print_node(node):
     print(f"       | {cube[20]}  {cube[21]} |")
     print(f"       | {cube[23]}  {cube[22]} |")
     print("       +------+")
-
-
-def goal_test(node):
-    cube = node.cube
-    sorted = [False, False, False, False, False, False]
-    for i in range(PHASE):
-        side_is_sorted = True
-        norm = cube[i * PHASE_SIZE]
-        for j in range(i * PHASE_SIZE, (i + 1) * PHASE_SIZE):
-            if cube[j] != norm:
-                side_is_sorted = False
-                break
-        sorted[i] = side_is_sorted
-    
-    for item in sorted:
-        if not item:
-            return False
-    return True
 
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
@@ -191,7 +171,6 @@ def main():
             cube.insert(i * PHASE_SIZE + k, j)
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
     snode = Node(cube)
-    print_node(snode)
     solution = bidirectional_search(snode)
     print(solution)
 
