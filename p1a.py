@@ -2,6 +2,10 @@ from copy import deepcopy
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
+NUMBER_OF_NODES_CREATED = 0
+NUMBER_OF_NODES_EXPANDED = 0
+SOLUTION_DEPTH = 0
+MAX_NUMBER_OF_NODES_STORED = 0
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -65,6 +69,10 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
 
 
 def rotate(cube, phase, direction):
+
+    global NUMBER_OF_NODES_CREATED
+    NUMBER_OF_NODES_CREATED += 1 # Here we create a node
+
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
         tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
@@ -92,6 +100,10 @@ def rotate(cube, phase, direction):
     return tmp_cube
 
 def depth_limited_search(cube, limit, solution):
+
+    global NUMBER_OF_NODES_EXPANDED
+    NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node
+
     if goal_test(cube):
         return True, solution
     elif limit == 0:
@@ -111,12 +123,16 @@ def depth_limited_search(cube, limit, solution):
             return False, []
 
 def depth_limited_search_decorator(cube, solution):
+    global SOLUTION_DEPTH
+
     limit = 0
     while True:
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
         limit += 1
+        SOLUTION_DEPTH += 1 # Here we define the depth of the solution
+
     return result, solution[::-1]
 
 def main():
