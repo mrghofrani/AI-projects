@@ -3,7 +3,7 @@ PHASE_SIZE = 4
 HEURISTIC1_CONSTANT = 4
 HEURISTIC2_CONSTANT = 2
 HEURISTIC3_CONSTANT = 1
-STEP_COST = 1
+STEP_COST = 8
 DIRECTION = {"clockwise", "anticlockwise"}
 
 # My rubik's cube internal indexing is
@@ -168,7 +168,6 @@ def main():
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
 
     node = Node(cube) # Creating initial node
-    print_node(node)
     solution = aStar(node)
     print(solution)
 
