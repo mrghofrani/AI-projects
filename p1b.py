@@ -2,6 +2,10 @@ from itertools import permutations
 PHASE = 6
 PHASE_SIZE = 4
 DIRECTION = {"clockwise", "anticlockwise"}
+NUMBER_OF_NODES_CREATED = 0
+NUMBER_OF_NODES_EXPANDED = 0
+SOLUTION_DEPTH = 0
+MAX_NUMBER_OF_NODES_STORED = 0
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -21,6 +25,9 @@ DIRECTION = {"clockwise", "anticlockwise"}
 
 class Node:
     def __init__(self, cube_arg, parent=None, phase=None, direction=None):
+        global NUMBER_OF_NODES_CREATED
+        NUMBER_OF_NODES_CREATED += 1
+
         self.cube = cube_arg
         self.parent = parent
         self.phase = phase
@@ -33,14 +40,18 @@ class Node:
 
 
 def find_solution(fnode, bnode):
+    global SOLUTION_DEPTH
+    
     solution_part1 = []
     while fnode.parent:
+        SOLUTION_DEPTH += 1 # Here we go deep to find first part of solution_depth
         solution_part1.append((fnode.phase + 1, fnode.direction))
         fnode = fnode.parent
 
     solution_part2 = []
     while bnode.parent:
         reverse_rotate = list(set(DIRECTION) - set(bnode.direction))[0]
+        SOLUTION_DEPTH += 1 # Here we go deep to find remaining part of solution_depth
         solution_part2.append((bnode.phase + 1, reverse_rotate))
         bnode = bnode.parent
 
@@ -129,6 +140,8 @@ def exist(node, explored):
 
 
 def bidirectional_search(snode):
+
+    global NUMBER_OF_NODES_EXPANDED
     qf = [snode] # queue of forward 
     ef = [snode] # explored set of forward 
     qb = initialize_qb() # queue of backward]
@@ -136,6 +149,7 @@ def bidirectional_search(snode):
     while qb and qf:
         if qf:
             node = qf.pop(0)
+            NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node from forward
             if node in eb:
                 matching_node = eb[eb.index(node)]
                 solution = find_solution(node, matching_node) 
@@ -143,12 +157,14 @@ def bidirectional_search(snode):
             for phase in range(PHASE):
                 for direction in DIRECTION:
                     child = rotate(node, phase, direction)
+
                     if not exist(child, ef):
                         ef.append(child)
                         qf.append(child)
 
         if qb:
             node = qb.pop(0)
+            NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node from backward
             if node in ef:
                 matching_node = ef[ef.index(node)]
                 solution = find_solution(matching_node, node)
