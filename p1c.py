@@ -5,6 +5,10 @@ HEURISTIC2_CONSTANT = 2
 HEURISTIC3_CONSTANT = 1
 STEP_COST = 8
 DIRECTION = {"clockwise", "anticlockwise"}
+NUMBER_OF_NODES_CREATED = 0
+NUMBER_OF_NODES_EXPANDED = 0
+SOLUTION_DEPTH = 0
+MAX_NUMBER_OF_NODES_STORED = 0
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -24,6 +28,9 @@ DIRECTION = {"clockwise", "anticlockwise"}
 
 class Node:
     def __init__(self, cube_arg, phase_arg=None, direction_arg = None, parent_arg = None):
+        global NUMBER_OF_NODES_CREATED
+        NUMBER_OF_NODES_CREATED +=1
+
         self.h = 0
         self.g = 0
         self.cube = cube_arg
@@ -128,6 +135,8 @@ def rotate(node, phase, direction):
 
 
 def aStar(start):
+
+    global NUMBER_OF_NODES_EXPANDED
     frontier = set()
     current = start
     frontier.add(current)
@@ -135,14 +144,17 @@ def aStar(start):
         current = min(frontier, key=lambda o:o.g + o.h)
 
         if goal_test(current):
+            global SOLUTION_DEPTH
             solution = []
             while current.parent:
+                SOLUTION_DEPTH += 1 # Here we find the solution and so that we could find solution depth
                 solution.append((current.phase + 1, current.direction))
                 current = current.parent
                 
             return solution[::-1]
 
         frontier.remove(current)
+        NUMBER_OF_NODES_EXPANDED += 1 # Here we begin to explore a node 
         for phase in range(PHASE):
             for direction in DIRECTION:
                 child = rotate(current, phase, direction)
