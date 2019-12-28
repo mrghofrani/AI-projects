@@ -41,10 +41,11 @@ IRAN_MAP = {
     "Sistan and Baluchestan": ["Hormozgan", "Kerman", "South Khorasan"]
 }
 COLOR = 4
-ALPHA = 100000000000
+ALPHA = 0.9
 T0 = 20
 EPSILON = 0.0001
 M = len(list(chain(*IRAN_MAP.values())))/2
+population_statistics = []
 
 
 class Map:
@@ -82,9 +83,11 @@ def successor(state):
 
 
 def simulated_annealing(state, schedule):
+    global population_statistics
     curr = state
     k = 0
     while True:
+        population_statistics.append(curr.fitness)
         T = schedule(k)
         if T < sys.float_info.epsilon:
             return curr
@@ -97,9 +100,11 @@ def simulated_annealing(state, schedule):
             if p > random():
                 curr = adj
         k += 1
+        
 
 
 def main():
+    global population_statistics
     state = generate_state()
     schedule ={
         '1': lambda k: T0 * ALPHA**k,
@@ -109,8 +114,8 @@ def main():
     }
     c = input("Run with algorithm: (1 to 4) ")
     answer = simulated_annealing(state, schedule[c])
-    print(answer.cmap)
-    print(answer.fitness)
+    for val in population_statistics:
+        print(val)
 
 if __name__ == "__main__":
     main() 

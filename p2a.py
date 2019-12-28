@@ -44,6 +44,7 @@ COLOR = 4
 M = len(list(chain(*IRAN_MAP.values())))/2
 TORNUMENT_SIZE = 2
 MUTATION_RATE = 0.02
+population_statistics = []
 
 
 class Map:
@@ -63,7 +64,20 @@ class Map:
             sigma_sum += sigma
         self.fitness = sigma_sum / M
     
-            
+
+def evaluate_population(population): 
+    global population_statistics
+    s = 0
+    min_val = float("inf")
+    max_val = -float("inf")
+    for member in population:
+        s += member.fitness
+        min_val = min(min_val, member.fitness)
+        max_val = max(max_val, member.fitness)
+    population_statistics.append((s/POPULATION_SIZE, min_val, max_val))
+    return
+
+
 def populate():
     population = []
     for _ in range(POPULATION_SIZE):
@@ -133,23 +147,20 @@ def mutation(population):
 def main():
     population = populate()
     generation = 0
-    for element in population:
-        print(element.cmap)
-        print(element.fitness)
-        print()
 
     while generation < NUMBER_OF_GENERATIONS:
         fitness_function(population)
+        evaluate_population(population) # For statistical purpose
         parents = select_parents(population)
         population = generate_new_population(parents)
         mutation(population)
         generation += 1
-    
+
     fitness_function(population)
-    for element in population:
-        print(element.cmap)
-        print(element.fitness)
-        print()
+
+    global population_statistics
+    for pair in population_statistics:
+        print(pair)
 
 
 if __name__ == "__main__":
