@@ -142,11 +142,13 @@ def exist(node, explored):
 def bidirectional_search(snode):
 
     global NUMBER_OF_NODES_EXPANDED
+    global MAX_NUMBER_OF_NODES_STORED
     qf = [snode] # queue of forward 
     ef = [snode] # explored set of forward 
     qb = initialize_qb() # queue of backward]
     eb = initialize_qb() # explored set of backward
     while qb and qf:
+        MAX_NUMBER_OF_NODES_STORED = max((len(ef) + len(eb)), MAX_NUMBER_OF_NODES_STORED) # Here we set the value of maximum number of nodes stored in memory
         if qf:
             node = qf.pop(0)
             NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node from forward
