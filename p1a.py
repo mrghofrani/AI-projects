@@ -112,7 +112,7 @@ def depth_limited_search(cube, limit, solution):
 
 def depth_limited_search_decorator(cube, solution):
     limit = 0
-    while limit <= 8:
+    while True:
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
