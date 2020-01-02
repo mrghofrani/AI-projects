@@ -109,8 +109,8 @@ def rotate(node, phase, direction):
     cube = node.cube[:]
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
-        tmp_cube = swap(tmp_cube, 4, 8, 12, 22, direction)
-        tmp_cube = swap(tmp_cube, 5, 9, 13, 23, direction)
+        tmp_cube = swap(tmp_cube, 22, 12, 8, 4, direction)
+        tmp_cube = swap(tmp_cube, 23, 13, 9, 5, direction)
     elif phase == 1:
         tmp_cube = swap(cube, 4, 5, 6, 7, direction)
         tmp_cube = swap(tmp_cube, 0, 8, 16, 20, direction)
