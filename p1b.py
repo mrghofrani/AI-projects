@@ -146,9 +146,9 @@ def bidirectional_search(snode):
     qf = [snode] # queue of forward 
     ef = [snode] # explored set of forward 
     qb = initialize_qb() # queue of backward]
-    eb = initialize_qb() # explored set of backward
+    eb = qb # explored set of backward
+    MAX_NUMBER_OF_NODES_STORED = len(eb) + len(ef) # Here we set the value of maximum number of nodes stored in memory
     while qb and qf:
-        MAX_NUMBER_OF_NODES_STORED = max((len(ef) + len(eb)), MAX_NUMBER_OF_NODES_STORED) # Here we set the value of maximum number of nodes stored in memory
         if qf:
             node = qf.pop(0)
             NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node from forward
@@ -163,6 +163,7 @@ def bidirectional_search(snode):
                     if not exist(child, ef):
                         ef.append(child)
                         qf.append(child)
+                        MAX_NUMBER_OF_NODES_STORED += 1
 
         if qb:
             node = qb.pop(0)
@@ -177,10 +178,11 @@ def bidirectional_search(snode):
                     if not exist(child, eb):
                         eb.append(child)
                         qb.append(child)
-        
+                        MAX_NUMBER_OF_NODES_STORED += 1
     return None
 
 def main():
+    global MAX_NUMBER_OF_NODES_STORED, NUMBER_OF_NODES_CREATED, NUMBER_OF_NODES_EXPANDED, SOLUTION_DEPTH
     cube = []
     print("Enter your cube:")
     for i in range(PHASE):
@@ -190,6 +192,11 @@ def main():
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
     snode = Node(cube)
     solution = bidirectional_search(snode)
+    
+    print(f"Maximum number of nodes stored is {MAX_NUMBER_OF_NODES_STORED}")
+    print(f"Number of nodes created is {NUMBER_OF_NODES_CREATED}")
+    print(f"Number of nodes expanded is {NUMBER_OF_NODES_EXPANDED}")
+    print(f"And the solution depth is {SOLUTION_DEPTH}")
     print(solution)
 
 if __name__ == "__main__":

@@ -171,6 +171,7 @@ def aStar(start):
 
 
 def main():
+    global MAX_NUMBER_OF_NODES_STORED, NUMBER_OF_NODES_CREATED, NUMBER_OF_NODES_EXPANDED, SOLUTION_DEPTH
     cube = []
     print("Enter your cube:")
     for i in range(PHASE):
@@ -181,6 +182,11 @@ def main():
 
     node = Node(cube) # Creating initial node
     solution = aStar(node)
+    
+    print(f"Maximum number of nodes stored is {MAX_NUMBER_OF_NODES_STORED}")
+    print(f"Number of nodes created is {NUMBER_OF_NODES_CREATED}")
+    print(f"Number of nodes expanded is {NUMBER_OF_NODES_EXPANDED}")
+    print(f"And the solution depth is {SOLUTION_DEPTH}")
     print(solution)
 
 if __name__ == "__main__":

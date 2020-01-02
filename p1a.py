@@ -6,6 +6,7 @@ NUMBER_OF_NODES_CREATED = 0
 NUMBER_OF_NODES_EXPANDED = 0
 SOLUTION_DEPTH = 0
 MAX_NUMBER_OF_NODES_STORED = 0
+max_number_of_nodes_stored_helper = 0
 
 # My rubik's cube internal indexing is
 #                +-------+
@@ -101,8 +102,10 @@ def rotate(cube, phase, direction):
 
 def depth_limited_search(cube, limit, solution):
 
-    global NUMBER_OF_NODES_EXPANDED
+    global NUMBER_OF_NODES_EXPANDED, MAX_NUMBER_OF_NODES_STORED, max_number_of_nodes_stored_helper
     NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node
+    max_number_of_nodes_stored_helper += 1 # Here we have gone a level deeper and so that 
+    MAX_NUMBER_OF_NODES_STORED = max(MAX_NUMBER_OF_NODES_STORED, max_number_of_nodes_stored_helper)
 
     if goal_test(cube):
         return True, solution
@@ -123,10 +126,12 @@ def depth_limited_search(cube, limit, solution):
             return False, []
 
 def depth_limited_search_decorator(cube, solution):
-    global SOLUTION_DEPTH
+    global SOLUTION_DEPTH, max_number_of_nodes_stored_helper
 
     limit = 0
     while True:
+        print(limit)
+        max_number_of_nodes_stored_helper = 0
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
@@ -136,6 +141,7 @@ def depth_limited_search_decorator(cube, solution):
     return result, solution[::-1]
 
 def main():
+    global MAX_NUMBER_OF_NODES_STORED, NUMBER_OF_NODES_CREATED, NUMBER_OF_NODES_EXPANDED, SOLUTION_DEPTH
     cube = []
     print("Enter your cube:")
     for i in range(PHASE):
@@ -146,6 +152,10 @@ def main():
     
     solution = []
     (_, solution) = depth_limited_search_decorator(cube, solution)
+    print(f"Maximum number of nodes stored is {MAX_NUMBER_OF_NODES_STORED}")
+    print(f"Number of nodes created is {NUMBER_OF_NODES_CREATED}")
+    print(f"Number of nodes expanded is {NUMBER_OF_NODES_EXPANDED}")
+    print(f"And the solution depth is {SOLUTION_DEPTH}")
     print(solution)
     
 if __name__ == "__main__":
