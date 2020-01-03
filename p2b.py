@@ -42,7 +42,7 @@ IRAN_MAP = {
 }
 COLOR = 4
 ALPHA = 0.9
-T0 = 20
+T0 = 1
 EPSILON = 0.0001
 M = len(list(chain(*IRAN_MAP.values())))/2
 population_statistics = []

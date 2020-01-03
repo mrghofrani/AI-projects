@@ -1,0 +1,51 @@
+#test1
+1,1,1,1
+6,6,2,2
+2,2,3,3
+3,3,4,4
+5,5,5,5
+6,6,4,4
+Maximum number of nodes stored is 1
+Number of nodes created is 1
+Number of nodes expanded is 3
+And the solution depth is 1
+[(1, 'clockwise')]
+--------------------------------------
+#test2
+4,2,4,2
+6,6,6,6
+1,5,1,5
+3,3,3,3
+2,4,2,4
+5,1,5,1
+Maximum number of nodes stored is 2
+Number of nodes created is 42
+Number of nodes expanded is 45
+And the solution depth is 2
+[(2, 'clockwise'), (2, 'clockwise')]
+---------------------------------------
+#test3
+1,5,1,5
+6,6,2,4
+2,4,3,3
+3,3,2,4
+1,1,5,5
+6,6,4,2
+Maximum number of nodes stored is 3
+Number of nodes created is 227
+Number of nodes expanded is 231
+And the solution depth is 3
+[(1, 'clockwise'), (3, 'clockwise'), (3, 'clockwise')]
+---------------------------------------
+#test4
+5,6,3,4
+2,1,5,4
+2,6,3,6
+1,5,1,4
+1,2,3,5
+4,6,3,2
+Maximum number of nodes stored is 5
+Number of nodes created is 77485
+Number of nodes expanded is 77491
+And the solution depth is 5
+[(2, 'anticlockwise'), (3, 'anticlockwise'), (1, 'anticlockwise'), (2, 'anticlockwise'), (1, 'anticlockwise')]

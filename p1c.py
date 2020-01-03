@@ -3,7 +3,7 @@ PHASE_SIZE = 4
 HEURISTIC1_CONSTANT = 4
 HEURISTIC2_CONSTANT = 2
 HEURISTIC3_CONSTANT = 1
-STEP_COST = 8
+STEP_COST = 1
 DIRECTION = {"clockwise", "anticlockwise"}
 NUMBER_OF_NODES_CREATED = 0
 NUMBER_OF_NODES_EXPANDED = 0
@@ -30,8 +30,6 @@ class Node:
     def __init__(self, cube_arg, phase_arg=None, direction_arg = None, parent_arg = None):
         global NUMBER_OF_NODES_CREATED
         NUMBER_OF_NODES_CREATED +=1
-
-        self.h = 0
         self.g = 0
         self.cube = cube_arg
         self.phase = phase_arg
@@ -71,23 +69,6 @@ def goal_test(node):
         if not item:
             return False
     return True
-
-
-def heuristic(node):
-    h1 = 0
-    h2 = 0
-    h3 = 0
-    cube = node.cube
-    for i in range(PHASE):
-        if len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
-            h1 += HEURISTIC1_CONSTANT
-    for i in range(PHASE):
-        if (len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) + 1) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
-            h2 += HEURISTIC2_CONSTANT
-    for i in range(PHASE):
-        if (len(set(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE])) + 2) == len(cube[i * PHASE_SIZE : (i + 1) * PHASE_SIZE]):
-            h3 += HEURISTIC3_CONSTANT
-    return h1 + h2 + h3
 
 
 def swap(cube, a:int,b:int,c:int,d:int,direction:str):
@@ -134,15 +115,26 @@ def rotate(node, phase, direction):
     return Node(tmp_cube, phase, direction, node)
 
 
-def aStar(start):
+def exist(node, frontier):
+    for element in frontier:
+        if node.cube == element.cube:
+            return True
+    return False
 
-    global NUMBER_OF_NODES_EXPANDED
-    frontier = set()
+def get_equivalent(node, frontier):
+    for element in frontier:
+        if node.cube == element.cube:
+            return element
+
+def usc(start):
+
+    global NUMBER_OF_NODES_EXPANDED, MAX_NUMBER_OF_NODES_STORED
+    frontier = list()
     current = start
-    frontier.add(current)
+    frontier.append(current)
+    MAX_NUMBER_OF_NODES_STORED += 1
     while frontier:
-        current = min(frontier, key=lambda o:o.g + o.h)
-
+        current = min(frontier, key=lambda o:o.g)
         if goal_test(current):
             global SOLUTION_DEPTH
             solution = []
@@ -158,16 +150,17 @@ def aStar(start):
         for phase in range(PHASE):
             for direction in DIRECTION:
                 child = rotate(current, phase, direction)
-                if child in frontier:  # Check if we have found a better way to reach child cube
+                if exist(child, frontier):  # Check if we have found a better way to reach child cube
+                    n = frontier[frontier.index(get_equivalent(child,frontier))]
                     new_g = current.g + STEP_COST
-                    if child.g > new_g:
-                        child.g = new_g
-                        child.parent = current
+                    if n.g > new_g:
+                        n.g = new_g
+                        n.parent = current
                 else:
                     child.g = current.g + STEP_COST
-                    child.h = heuristic(child)
                     child.parent = current
-                    frontier.add(child)
+                    frontier.append(child)
+                    MAX_NUMBER_OF_NODES_STORED += 1
 
 
 def main():
@@ -181,7 +174,7 @@ def main():
         cube[i * PHASE_SIZE + 2], cube[i * PHASE_SIZE + 3] = cube[i * PHASE_SIZE + 3], cube[i * PHASE_SIZE + 2]
 
     node = Node(cube) # Creating initial node
-    solution = aStar(node)
+    solution = usc(node)
     
     print(f"Maximum number of nodes stored is {MAX_NUMBER_OF_NODES_STORED}")
     print(f"Number of nodes created is {NUMBER_OF_NODES_CREATED}")

@@ -50,7 +50,7 @@ def find_solution(fnode, bnode):
 
     solution_part2 = []
     while bnode.parent:
-        reverse_rotate = list(set(DIRECTION) - set(bnode.direction))[0]
+        reverse_rotate = list(set(DIRECTION) - {bnode.direction})[0]
         SOLUTION_DEPTH += 1 # Here we go deep to find remaining part of solution_depth
         solution_part2.append((bnode.phase + 1, reverse_rotate))
         bnode = bnode.parent

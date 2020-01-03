@@ -160,7 +160,8 @@ def main():
 
     global population_statistics
     for pair in population_statistics:
-        print(pair)
+        tmp = f"{pair[0]},{pair[1]},{pair[2]}"
+        print(tmp)
 
 
 if __name__ == "__main__":

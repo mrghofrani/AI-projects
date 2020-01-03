@@ -71,9 +71,6 @@ def swap(cube, a:int,b:int,c:int,d:int,direction:str):
 
 def rotate(cube, phase, direction):
 
-    global NUMBER_OF_NODES_CREATED
-    NUMBER_OF_NODES_CREATED += 1 # Here we create a node
-
     if phase == 0:
         tmp_cube = swap(cube, 0, 1, 2, 3, direction)
         tmp_cube = swap(tmp_cube, 22, 12, 8, 4, direction)
@@ -102,10 +99,8 @@ def rotate(cube, phase, direction):
 
 def depth_limited_search(cube, limit, solution):
 
-    global NUMBER_OF_NODES_EXPANDED, MAX_NUMBER_OF_NODES_STORED, max_number_of_nodes_stored_helper
+    global NUMBER_OF_NODES_EXPANDED, NUMBER_OF_NODES_CREATED
     NUMBER_OF_NODES_EXPANDED += 1 # Here we expand a node
-    max_number_of_nodes_stored_helper += 1 # Here we have gone a level deeper and so that 
-    MAX_NUMBER_OF_NODES_STORED = max(MAX_NUMBER_OF_NODES_STORED, max_number_of_nodes_stored_helper)
 
     if goal_test(cube):
         return True, solution
@@ -116,6 +111,7 @@ def depth_limited_search(cube, limit, solution):
         for phase in range(PHASE): # We have 12 rotations in a rubik's cube
             for direction in DIRECTION:
                 child = rotate(cube[:], phase, direction)
+                NUMBER_OF_NODES_CREATED += 1
                 result, solution = depth_limited_search(child, limit-1, solution[:])
                 if result:
                     solution.append((phase+1, direction))
@@ -126,17 +122,16 @@ def depth_limited_search(cube, limit, solution):
             return False, []
 
 def depth_limited_search_decorator(cube, solution):
-    global SOLUTION_DEPTH, max_number_of_nodes_stored_helper
+    global SOLUTION_DEPTH, MAX_NUMBER_OF_NODES_STORED
 
     limit = 0
     while True:
-        print(limit)
-        max_number_of_nodes_stored_helper = 0
         (result, solution) = depth_limited_search(cube, limit, solution)
         if result: 
             break
         limit += 1
         SOLUTION_DEPTH += 1 # Here we define the depth of the solution
+        MAX_NUMBER_OF_NODES_STORED += 1
 
     return result, solution[::-1]
 
