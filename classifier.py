@@ -6,6 +6,7 @@ TRIGRAM = 2
 def main():
     model = dict()
     line = "initial value"
+    word_num = 0
     with open("HAM-Train-Test/HAM-Test.txt", "r") as ftrain:
         while True:
             line = ftrain.readline()
@@ -28,6 +29,7 @@ def main():
                 line.remove('\n')
             if '' in line:
                 line.remove('')
+            word_num += len(line)
             for word in line: # Calculating unigram
                 if word not in model[topic][UNIGRAM]:
                     model[topic][UNIGRAM][word] = 0
@@ -44,6 +46,7 @@ def main():
                 if (word1,word2,word3) not in model[topic][TRIGRAM]:
                     model[topic][TRIGRAM][(word1,word2,word3)] = 0
                 model[topic][TRIGRAM][(word1,word2,word3)] += 1
+        print(word_num)
 
 if __name__ == "__main__":
     main()
