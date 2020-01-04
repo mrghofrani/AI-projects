@@ -5,7 +5,6 @@ TRIGRAM = 2
 
 def main():
     model = dict()
-    line = "initial value"
     topic_num = dict()
     number_of_start_sign = 0 # number of start sign
     # +-------------------------+
@@ -88,6 +87,31 @@ def main():
         # +-------------------------+
         # |      Testing part       |
         # +-------------------------+
+
+        result = [] # Result set is a list of topics each of the unigram, bigram and trigram has recognized. 
+                    # Index Zero is for real topic, Second one is for topic recognized by unigram, Third is for bigram, And the 4th one is of trigram
+        with open("HAM-Train-Test/HAM-Test.txt", "r") as ftest:
+            while True:
+                line = ftrain.readline()
+                if not line:
+                    break
+                # If the line contains a topic 
+                if "@@@@@@@@@@" in line:
+                    real_topic = line.split("@@@@@@@@@@")[0]
+                    line = line.split("@@@@@@@@@@")[1]
+                line = line.split(' ')
+                
+                # for other words
+                # At first, we remove unwanter characters from our data line
+                if '\n' in line:
+                    line.remove('\n')
+                if '' in line:
+                    line.remove('')
+                # prepare for bigram and trigram
+                rsline = ['*'] + line
+                rs2line = ['*'] + rsline
+                
+                
 
 
 if __name__ == "__main__":
