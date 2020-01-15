@@ -3,9 +3,15 @@ from math import log10, floor
 from operator import __add__, __mul__
 
 
-def select_node(assignment, mode):
-    if mode == 1:
-        pass #TODO: we should return base on MVR
+def select_node(assignment, domain, mode):
+    if mode[0] == '1':
+        min_val = float("inf")
+        for i, domain_i in enumerate(domain):
+            if assignment[i] is not None:
+                if min_val > len(domain_i):
+                    min_val = len(domain_i)
+                    index = i
+        return index
     else: # We should choose randomly from unvisited nodes
         for i, val in enumerate(assignment):
             if val is None:
