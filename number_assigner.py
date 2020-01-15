@@ -51,14 +51,16 @@ def constrainter(assignment, node, domain, edge, node_type):
     unassigned = []
     for n in edge[node]:
         if assignment[n] is None:
-            assigned.append(n)
-        else:
             unassigned.append(n)
+        else:
+            assigned.append(n)
     
     if node_type == 'T' or node_type == 'S': 
         func = __mul__
     elif node_type == 'H' or node_type == 'P':
         func = __add__
+    else:
+        return
 
     if not unassigned: # if all adjacends where assigned with a number
         pass
@@ -82,7 +84,7 @@ def constrainter(assignment, node, domain, edge, node_type):
 
     for item in assigned:
         val = assignment[item]
-        possible = [i*val for i in possible]
+        possible = [ func(i,val) for i in possible]
 
     if node_type == 'S' or node_type == 'P':
         lsd = set() # least significant digit
@@ -99,22 +101,22 @@ def constrainter(assignment, node, domain, edge, node_type):
 
 
 def forward_check(assignment, domain, node, node_type, edge):
-    for e in edge[node]:
-        if node_type[e] == 'T': 
+    for adj in edge[node]:
+        if node_type[adj] == 'T': 
             pass
-        elif node_type[e] == 'S':
+        elif node_type[adj] == 'S':
             if assignment[node] % 2 == 0:
-                domain[e] = [x for x in domain[e] if x % 2 == 0]
+                domain[adj] = [x for x in domain[e] if x % 2 == 0]
             elif assignment[node] == 5:
-                domain[e] = [x for x in domain[e] if x % 5 == 0]
-        elif node_type[e] == 'C':
+                domain[adj] = [x for x in domain[e] if x % 5 == 0]
+        elif node_type[adj] == 'C':
             pass
-        elif node_type[e] == 'H':
+        elif node_type[adj] == 'H':
             pass
         
     # Here we propogate the constraint
     for adj in edge[node]:
-        domain[adj] = constrainter(assignment, adj, domain, edge, node_type=node[adj])
+        domain[adj] = constrainter(assignment, adj, domain, edge, node_type=node_type[adj])
     return
 
 
@@ -128,7 +130,7 @@ def backtrack(assignment, node_type, domain, node_num, edge, mode):
         if consistent(tmp_assignment, n, node_type, edge):
             assignment[n] = val
             if mode[1] == '1':
-                forward_check(assignment, domain, node=n, node_type=node_type[n], edge=edge)
+                forward_check(assignment, domain, node=n, node_type=node_type, edge=edge)
             result = backtrack(assignment[:], node_type, domain[:], node_num, edge, mode)
             if result:
                 return result
@@ -143,7 +145,7 @@ def initialize_list(node_num):
 
 
 def main():
-    mode = "100"
+    mode = "110"
     node_num = int(input())
     assignment = [None] * node_num
 
@@ -162,7 +164,7 @@ def main():
     for i in range(node_num):
         domain.append(list(range(1,10))) # Each node domain could be from 1 up to 9
 
-    solution = backtrack(assignment[:], node_type, domain, node_num, edge, mode="100")
+    solution = backtrack(assignment[:], node_type, domain, node_num, edge, mode)
     if solution is not None:
         print(solution)
 
