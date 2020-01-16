@@ -36,7 +36,6 @@ def consistent(assignment, node, node_type, edge):
         if ntype == 'S' or ntype == 'H':
             return assignment[node] == neighbour_value % 10
         elif ntype == 'T' or ntype == 'P':
-            x = neighbour_value // 10**floor(log10(neighbour_value))
             return assignment[node] == neighbour_value // 10**floor(log10(neighbour_value))
     return True
 
@@ -71,7 +70,7 @@ def constrainter(assignment, node, domain, edge, node_type):
     elif node_type == 'H' or node_type == 'P':
         func = __add__
         store = 0
-    else:
+    elif node_type == 'C':
         return
 
     if not unassigned: # if all adjacends where assigned with a number
@@ -186,8 +185,7 @@ def main():
         domain.append(list(range(1,10))) # Each node domain could be from 1 up to 9
 
     solution = backtrack(assignment[:], node_type, domain, edge, mode)
-    if solution is not None:
-        print(solution)
+    print(solution)
 
 
 if __name__ == "__main__":
