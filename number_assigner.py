@@ -23,20 +23,18 @@ def consistent(assignment, node, node_type, edge):
     if ntype == 'C':
         return True # There is no consistent checking for circle
     neighbour_value = 1 if ntype == 'T' or ntype == 'S' else 0
-    valid = False
     for n in edge[node]:
         if assignment[n] is None:
-            continue
-        valid = True
-        if ntype == 'T' or ntype == 'S':
-            neighbour_value *= assignment[n]
-        elif ntype == 'P' or ntype == 'H':
-            neighbour_value += assignment[n]
-    if valid:
-        if ntype == 'S' or ntype == 'H':
-            return assignment[node] == neighbour_value % 10
-        elif ntype == 'T' or ntype == 'P':
-            return assignment[node] == neighbour_value // 10**floor(log10(neighbour_value))
+            return True
+        else:
+            if ntype == 'T' or ntype == 'S':
+                neighbour_value *= assignment[n]
+            elif ntype == 'P' or ntype == 'H':
+                neighbour_value += assignment[n]
+    if ntype == 'S' or ntype == 'H':
+        return assignment[node] == neighbour_value % 10
+    elif ntype == 'T' or ntype == 'P':
+        return assignment[node] == neighbour_value // 10**floor(log10(neighbour_value))
     return True
 
 
@@ -71,7 +69,7 @@ def constrainter(assignment, node, domain, edge, node_type):
         func = __add__
         store = 0
     elif node_type == 'C':
-        return
+        return domain[node]
 
     if not unassigned: # if all adjacends where assigned with a number
         for node in assigned:
