@@ -6,10 +6,10 @@ from operator import __add__, __mul__
 def select_node(assignment, domain, mode):
     if mode[0] == '1':
         min_val = float("inf")
-        for i, domain_i in enumerate(domain):
-            if assignment[i] is not None:
-                if min_val > len(domain_i):
-                    min_val = len(domain_i)
+        for i, _ in enumerate(domain):
+            if assignment[i] is None and domain[i] is not None:
+                if min_val > len(domain[i]):
+                    min_val = len(domain[i])
                     index = i
         return index
     else: # We should choose randomly from unvisited nodes
@@ -63,34 +63,40 @@ def constrainter(assignment, node, domain, edge, node_type):
     
     if node_type == 'T' or node_type == 'S': 
         func = __mul__
+        store = 1
     elif node_type == 'H' or node_type == 'P':
         func = __add__
+        store = 0
     else:
         return
 
     if not unassigned: # if all adjacends where assigned with a number
-        pass
-    elif len(unassigned) == 1: # just one unassigned
-        a = unassigned.pop()
-        possible = domain[a]
+        for node in assigned:
+            store = func(store, assignment[node])
+        possible = [store]
     else:
-        possible = []
-        a = unassigned.pop()
-        b = unassigned.pop()
-        for item1 in domain[a]:
-            for item2 in domain[b]:
-                possible.append(func(item1, item2))
-        while unassigned:
-            tmp = unassigned.pop()
-            tmp_possible = []
-            for item1 in possible:
-                for item2 in tmp:
-                    tmp_possible.append(func(item1,item2))
-            possible = tmp_possible[:]
+        if len(unassigned) == 1: # just one unassigned
+            a = unassigned.pop()
+            possible = domain[a]
+        else:
+            possible = []
+            a = unassigned.pop()
+            b = unassigned.pop()
+            for item1 in domain[a]:
+                for item2 in domain[b]:
+                    possible.append(func(item1, item2))
+            while unassigned:
+                tmp = unassigned.pop()
+                tmp_possible = []
+                for item1 in possible:
+                    for item2 in tmp:
+                        tmp_possible.append(func(item1,item2))
+                possible = tmp_possible[:]
 
-    for item in assigned:
-        val = assignment[item]
-        possible = [ func(i,val) for i in possible]
+        for item in assigned:
+            val = assignment[item]
+            possible = [ func(i,val) for i in possible]
+
 
     if node_type == 'S' or node_type == 'P':
         lsd = set() # least significant digit
@@ -112,9 +118,9 @@ def forward_check(assignment, domain, node, node_type, edge):
             pass
         elif node_type[adj] == 'S':
             if assignment[node] % 2 == 0:
-                domain[adj] = [x for x in domain[e] if x % 2 == 0]
+                domain[adj] = [x for x in domain[node] if x % 2 == 0]
             elif assignment[node] == 5:
-                domain[adj] = [x for x in domain[e] if x % 5 == 0]
+                domain[adj] = [x for x in domain[node] if x % 5 == 0]
         elif node_type[adj] == 'C':
             pass
         elif node_type[adj] == 'H':
@@ -129,7 +135,7 @@ def forward_check(assignment, domain, node, node_type, edge):
 def backtrack(assignment, node_type, domain, node_num, edge, mode):
     if valid(assignment, node_type, node_num, edge): 
         return assignment
-    n = select_node(assignment, mode=mode[0])
+    n = select_node(assignment, domain, mode=mode[0])
     for val in domain[n]:
         tmp_assignment = assignment[:]
         tmp_assignment[n] = val
@@ -141,6 +147,11 @@ def backtrack(assignment, node_type, domain, node_num, edge, mode):
             if result:
                 return result
     return None
+
+
+def AC3(assignment, node, domain, edge, node_type):
+    pass
+
 
 
 def initialize_list(node_num):
