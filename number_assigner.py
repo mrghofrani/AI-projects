@@ -38,13 +38,15 @@ def consistent(assignment, node, node_type, edge):
     return True
 
 
-def valid(assignment, node_type, edge):
-    # At first we shuold check that each node has assigned with a value
-
+def all_assigned(assignment, node_type):
     for i,_ in enumerate(node_type):
         if assignment[i] is None:
             return False
-    # And then we should check that each assignment is consistent or not
+    return True
+
+
+def valid(assignment, node_type, edge):
+    # We should check that each assignment is consistent or not
     for i,_ in enumerate(node_type):
         if not consistent(assignment, i, node_type, edge):
             return False
@@ -134,8 +136,11 @@ def forward_check(assignment, domain, node, node_type, edge):
 
 
 def backtrack(assignment, node_type, domain, edge, mode):
-    if valid(assignment, node_type, edge): 
-        return assignment
+    if all_assigned(assignment, node_type):
+        if valid(assignment, node_type, edge): 
+            return assignment
+        else:
+            return None
     n = select_node(assignment, domain, mode=mode[0])
     for val in domain[n]:
         tmp_assignment = assignment[:]
